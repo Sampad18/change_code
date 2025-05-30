@@ -1,0 +1,40 @@
+Here is the equivalent code in Go:
+
+```go
+package main
+
+import (
+	"fmt"
+	"html"
+	"net/http"
+	"time"
+)
+
+func handler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		r.ParseForm()
+		name := html.EscapeString(r.Form.Get("name"))
+		fmt.Fprintf(w, "<h2>Hello, %s!</h2>", name)
+		fmt.Fprintf(w, "<p>Current date and time is: %s</p>", time.Now().Format("2006-01-02 15:04:05"))
+	} else {
+		fmt.Fprintf(w, "<h1>Welcome to the Go Demo!</h1>")
+		fmt.Fprintf(w, `<form method="post" action="%s">
+			<label for="name">Enter your name:</label><br><br>
+			<input type="text" id="name" name="name" required><br><br>
+			<input type="submit" value="Submit">
+		</form>`, html.EscapeString(r.URL.Path))
+	}
+}
+
+func main() {
+	http.HandleFunc("/", handler)
+	http.ListenAndServe(":8080", nil)
+}
+```
+
+In this Go code:
+- We define an HTTP handler function that handles both GET and POST requests.
+- We use the `html` package to escape user input to prevent XSS attacks.
+- We use the `time` package to get the current date and time.
+- We create an HTTP server listening on port 8080.
+- The form action URL is obtained from the request URL path.
